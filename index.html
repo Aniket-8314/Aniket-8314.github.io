@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aniket Kumar | Web Developer</title>
     <meta name="description" content="The professional portfolio of Aniket kumar, a passionate web developer specializing in modern front-end technologies.">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&family=Roboto+Slab:wght@400;600&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,13 +29,13 @@
         <section id="home" class="hero">
             <div class="hero__content">
                 <h1 class="hero__title">I'm Aniket Kumar</h1>
-                <p class="hero__subtitle">Creative ML Developer</p>
+                <p class="hero__subtitle">Creative Developer | Data Science & ML Enthusiast </p>
                 <a href="#projects" class="hero__cta-button">View My Work</a>
             </div>
         </section>
 
         <section id="about" class="about">
-            <h2 class="section-title">About Me</h2>
+            <h2 class="section-title"><u>About Me</u></h2>
             <div class="about__content">
                 <img src="images/profile.jpg" alt="A professional headshot of Aniket Kumar" class="about__photo">
                 <p class="about__bio">
@@ -46,13 +47,13 @@
         </section>
 
         <section id="projects" class="projects">
-            <h2 class="section-title">My Projects</h2>
+            <h2 class="section-title"><u>My Projects</u></h2><br>
             <div class="projects__grid">
                 <article class="project-card">
                     <img src="images/smhp.png" alt="Screenshot of Project One" class="project-card__image">
                     <div class="project-card__content">
-                        <h3 class="project-card__title">Project One</h3>
-                        <p class="project-card__description">A brief description of the project, the problem it solves, and my role in its development.</p>
+                        <!-- <h3 class="project-card__title"></h3> -->
+                        <p class="project-card__description">This is website which tells stress in three levels -> 1.High 2.Moderate 3.Low . It has many parameters which gives output.</p>
                         <div class="project-card__tech">
                             <span>Machine Learning</span>
                             <span>pandas</span>
@@ -65,28 +66,29 @@
                     </div>
                 </article>
                 <article class="project-card">
-                    <img src="https://via.placeholder.com/400x250" alt="Screenshot of Project Two" class="project-card__image">
+                    <img src="images/cbt.png" alt="Screenshot of Project Two" class="project-card__image">
                     <div class="project-card__content">
-                        <h3 class="project-card__title">Project Two</h3>
-                        <p class="project-card__description">A brief description of the project, the problem it solves, and my role in its development.</p>
+                        <!-- <h3 class="project-card__title">Project Two</h3> -->
+                        <p class="project-card__description">This is a chatbot based on nltk with help of json file hybrid with wikipedia API. This is a chatbot which can tell what about some famous persons/things.</p>
                         <div class="project-card__tech">
-                            <span>Next.js</span>
-                            <span>Tailwind CSS</span>
+                            <span>Python</span>
+                            <span>HTML & CSS</span>
+                            <span>NLTK & Wikipedia API</span>
                         </div>
                         <div class="project-card__links">
-                            <a href="#" target="_blank">Live Demo</a>
-                            <a href="#" target="_blank">Source Code</a>
+                            <a href="https://chatbot-2beg.onrender.com" target="_blank">Live Demo</a>
+                            <a href="https://github.com/Aniket-8314/Chatbot.git" target="_blank">Source Code</a>
                         </div>
                     </div>
                 </article>
                 <article class="project-card">
-                    <img src="https://via.placeholder.com/400x250" alt="Screenshot of Project Three" class="project-card__image">
+                    <img src="images/" alt="Screenshot of Project Three" class="project-card__image">
                     <div class="project-card__content">
-                        <h3 class="project-card__title">Project Three</h3>
-                        <p class="project-card__description">A brief description of the project, the problem it solves, and my role in its development.</p>
+                        <!-- <h3 class="project-card__title">Project Three</h3> -->
+                        <!-- <p class="project-card__description">A brief description of the project, the problem it solves, and my role in its development.</p> -->
                         <div class="project-card__tech">
-                            <span>Vanilla JS</span>
-                            <span>Three.js</span>
+                            <!-- <span>Vanilla JS</span>
+                            <span>Three.js</span> -->
                         </div>
                         <div class="project-card__links">
                             <a href="#" target="_blank">Live Demo</a>
@@ -98,7 +100,7 @@
         </section>
 
         <section id="skills" class="skills">
-            <h2 class="section-title">Skills</h2>
+            <h2 class="section-title"><u>My Skills</u></h2><br>
             <div class="skills__container">
                 <div class="skills__category">
                     <h3>Languages</h3>
@@ -137,8 +139,30 @@
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 @N!KET. All rights reserved.</p>
+        <p>&copy; <span id="datetime"></span> @N!KET. All rights reserved.</p>
     </footer>
+
+    <script>
+    function updateDateTime() {
+        const now = new Date();
+        const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        };
+        document.getElementById("datetime").textContent = now.toLocaleString("en-US", options);
+    }
+
+    // Update every second
+    setInterval(updateDateTime, 1000);
+    updateDateTime(); // initial call
+    </script>
+
+
+    
 
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.1.0/tsparticles.bundle.min.js"></script>
     
