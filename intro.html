@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>I am Aniket Kumar — Interactive Dotted Intro</title>
+<style>
+  /* Basic reset */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: linear-gradient(120deg, #0f1720 0%, #10263a 50%, #08121a 100%);
+    color: #e6f9f8;
+    font-family: Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  /* full-screen canvas */
+  canvas#dots {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 0;
+    pointer-events: none; /* let pointer events go through to page */
+  }
+
+  /* Center content */
+  .hero {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .name {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    text-shadow: 0 8px 30px rgba(0,255,240,0.06);
+  }
+
+  .name h1 {
+    font-size: clamp(2.2rem, 6vw, 5rem);
+    margin-bottom: 0.3rem;
+    display: inline-block;
+  }
+
+  .name p {
+    margin-top: 0.6rem;
+    font-size: clamp(1rem, 2.2vw, 1.25rem);
+    color: rgba(230,249,248,0.9);
+  }
+
+  /* subtle hint text */
+  .hint {
+    margin-top: 1.25rem;
+    font-size: 0.85rem;
+    color: rgba(230,249,248,0.6);
+  }
+
+  /* reduce motion for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    canvas#dots { display: none; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="dots"></canvas>
+
+  <main class="hero" role="main" aria-label="Introduction">
+    <div class="name" aria-hidden="false">
+      <h1>I am <span style="color:#00fff0">Aniket Kumar</span></h1>
+      <p>Frontend • Web enthusiast • Problem solver</p>
+      <div class="hint">Move your mouse around — the dots move away 👋</div>
+    </div>
+  </main>
+
+<script>
+/*
+Interactive dotted canvas with mouse repulsion.
+Save as index.html and open in a modern browser.
+*/
+(() => {
+  const canvas = document.getElementById('dots');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  let width = 0;
+  let height = 0;
+  let dpr = Math.max(1, window.devicePixelRatio || 1);
+
+  function resize() {
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    width = Math.floor(window.innerWidth);
+    height = Math.floor(window.innerHeight);
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    layoutParticles();
+  }
+
+  // particle config
+  const config = {
+    spacing: 28,          // distance between dots (px) — smaller => more dots
+    jitter: 4,            // random jitter amount around base pos
+    radius: 1.2,          // dot radius
+    repelRadius: 120,     // influence radius of the pointer
+    repelForce: 1200,     // strength of repulsion (higher => stronger)
+    returnSpeed: 0.08,    // how fast it returns to base
+    friction: 0.92,       // damping to velocity
+    density: 1,           // multiply particle count (1 = normal)
+  };
+
+  // store pointer
+  const pointer = { x: -9999, y: -9999, active: false };
+
+  // particles array
+  let particles = [];
+
+  // create grid of base positions then add particles
+  function layoutParticles() {
+    particles = [];
+    const cols = Math.ceil(width / config.spacing) + 1;
+    const rows = Math.ceil(height / config.spacing) + 1;
+
+    // center the grid so dots fill nicely
+    const offsetX = (width - (cols - 1) * config.spacing) / 2;
+    const offsetY = (height - (rows - 1) * config.spacing) / 2;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const baseX = Math.round(offsetX + c * config.spacing + (Math.random() - 0.5) * config.jitter);
+        const baseY = Math.round(offsetY + r * config.spacing + (Math.random() - 0.5) * config.jitter);
+        // duplicate for density if needed
+        for (let k = 0; k < config.density; k++) {
+          particles.push({
+            x: baseX + (Math.random() - 0.5) * config.jitter * 3,
+            y: baseY + (Math.random() - 0.5) * config.jitter * 3,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            baseX,
+            baseY,
+            r: config.radius * (0.85 + Math.random() * 0.4)
+          });
+        }
+      }
+    }
+  }
+
+  // pointer handlers (mouse + touch)
+  function setPointer(x, y) {
+    pointer.x = x;
+    pointer.y = y;
+  }
+  function clearPointer() {
+    pointer.x = -9999;
+    pointer.y = -9999;
+    pointer.active = false;
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    pointer.active = true;
+    setPointer(e.clientX, e.clientY);
+  }, {passive:true});
+
+  window.addEventListener('mouseleave', () => {
+    clearPointer();
+  });
+
+  window.addEventListener('touchstart', (e) => {
+    pointer.active = true;
+    const t = e.touches[0];
+    setPointer(t.clientX, t.clientY);
+  }, {passive:true});
+
+  window.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    setPointer(t.clientX, t.clientY);
+  }, {passive:true});
+
+  window.addEventListener('touchend', () => {
+    clearPointer();
+  });
+
+  // animation loop
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+
+    // subtle background vignette — optional
+    drawBackground();
+
+    // update particles
+    for (let i = 0, len = particles.length; i < len; i++) {
+      const p = particles[i];
+
+      // apply repulsion from pointer
+      const dx = p.x - pointer.x;
+      const dy = p.y - pointer.y;
+      const distSq = dx * dx + dy * dy;
+      const repelR = config.repelRadius;
+      if (pointer.active && distSq < repelR * repelR) {
+        const dist = Math.sqrt(distSq) || 0.0001;
+        const force = (1 - dist / repelR) * config.repelForce;
+        // normalized direction away from pointer
+        const nx = dx / dist;
+        const ny = dy / dist;
+        p.vx += nx * (force / Math.max(1, p.r*10)) * (1/60);
+        p.vy += ny * (force / Math.max(1, p.r*10)) * (1/60);
+      }
+
+      // random micro jitter
+      p.vx += (Math.random() - 0.5) * 0.06;
+      p.vy += (Math.random() - 0.5) * 0.06;
+
+      // apply friction
+      p.vx *= config.friction;
+      p.vy *= config.friction;
+
+      // pull back to base position
+      const toBaseX = (p.baseX - p.x) * config.returnSpeed;
+      const toBaseY = (p.baseY - p.y) * config.returnSpeed;
+      p.vx += toBaseX;
+      p.vy += toBaseY;
+
+      // integrate
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // draw
+      drawDot(p.x, p.y, p.r);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  function drawDot(x, y, r) {
+    // subtle glow with small ring
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(0,255,240,0.95)'; // bright core
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // faint outer halo
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(0,255,240,0.06)';
+    ctx.arc(x, y, r * 4.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawBackground() {
+    // faint center gradient overlay for depth
+    const g = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height));
+    g.addColorStop(0, 'rgba(8,18,24,0.05)');
+    g.addColorStop(1, 'rgba(8,18,24,0.0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  // initialize
+  resize();
+  window.addEventListener('resize', () => {
+    // debounce for performance
+    clearTimeout(window._dotResize);
+    window._dotResize = setTimeout(resize, 150);
+  });
+
+  // start
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
